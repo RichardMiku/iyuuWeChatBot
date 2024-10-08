@@ -1,0 +1,68 @@
+services:
+  app:
+    build: .
+    ports:
+      - "37320:8080"
+    container_name: botapi
+    environment:
+      - SEND_API_URL=http://wxbot:3001
+      - ZHSS_API_URL=http://zhss-app:8090
+    env_file:
+      - .env
+    volumes:
+      - ./bin/usrdata:/app/usrdata
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health_check"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  wxBotWebhook:
+    image: dannicool/docker-wechatbot-webhook
+    container_name: wxbot
+    #volumes:
+    #  - ./wxBot_logs:/app/log
+    ports:
+      - "3001:3001"
+    environment:
+      LOG_LEVEL: info
+      RECVD_MSG_API: http://botapi:8080/msgreceive
+    env_file:
+      - .env
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+
+  zhssapi:
+    build: ./zhssapi
+    ports:
+      - "8090:8090"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: zhss
+      MYSQL_USERNAME: zhss
+      MYSQL_PASSWORD: zhsspy233
+    depends_on:
+      mysql:
+        condition: service_healthy
+    container_name: zhss-app
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: zhss
+      MYSQL_USER: zhss
+      MYSQL_PASSWORD: zhsspy233
+    #volumes:
+    #  - ./mdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    container_name: zhss-mysql

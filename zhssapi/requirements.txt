@@ -1,0 +1,9 @@
+beautifulsoup4
+lxml
+httpx
+PyExecJS
+fastapi
+uvicorn
+pymysql-pool
+pydantic
+cryptography

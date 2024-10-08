@@ -1,0 +1,26 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Log in to Alibaba Cloud Container Registry
+      run: |
+        echo ${{ secrets.ACR_PASSWORD }} | docker login --username ${{ secrets.ACR_USERNAME }} --password-stdin ${{ secrets.ACR_REGISTRY }}
+
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ secrets.ACR_REGISTRY }}/ricxx/wxbotasp:latest .
+
+    - name: Push Docker image to Alibaba Cloud
+      run: |
+        docker push ${{ secrets.ACR_REGISTRY }}/ricxx/wxbotasp:latest
