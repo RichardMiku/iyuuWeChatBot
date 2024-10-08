@@ -27,6 +27,9 @@ jobs:
     - name: Publish
       run: dotnet publish --configuration Release --no-build --output ./publish
 
+    - name: List publish directory
+      run: ls -la ./publish
+
     - name: Archive build output
       uses: actions/upload-artifact@v3
       with:
