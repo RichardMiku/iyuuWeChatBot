@@ -1,66 +1,70 @@
 services:
+  # 构建机器人api
   app:
     build: .
     ports:
       - "37320:8080"
-    container_name: botapi
+    container_name: botapi #机器人api容器名称
     environment:
-      - SEND_API_URL=http://wxbot:3001
-      - ZHSS_API_URL=http://zhss-app:8090
+      - SEND_API_URL=http://wxbot:3001 #机器人框架推消息api
+      - ZHSS_API_URL=http://zhss-app:8090 #智慧山商查询api
     env_file:
-      - .env
+      - .env #全局环境变量文件
     volumes:
-      - ./bin/usrdata:/app/usrdata
-    healthcheck:
+      - ./bin/usrdata:/app/usrdata #映射配置文件文件夹，后续可能使用数据库而不是写到本地文件
+    healthcheck: #api健康检查，框架需等待api启动
       test: ["CMD", "curl", "-f", "http://localhost:8080/health_check"]
       interval: 3s
       timeout: 5s
       retries: 5
 
+  #微信机器人框架
   wxBotWebhook:
     image: dannicool/docker-wechatbot-webhook
-    container_name: wxbot
+    container_name: wxbot #机器人框架容器名称
     #volumes:
     #  - ./wxBot_logs:/app/log
     ports:
-      - "3001:3001"
+      - "3001:3001" #3001推消息api端口，调试时可对外开放
     environment:
-      LOG_LEVEL: info
-      RECVD_MSG_API: http://botapi:8080/msgreceive
+      LOG_LEVEL: info #日志级别
+      RECVD_MSG_API: http://botapi:8080/msgreceive #收消息api
     env_file:
-      - .env
-    depends_on:
-      app:
+      - .env #全局环境变量配置
+    depends_on: #机器人框架启动依赖
+      app: #需等待机器人api先启动
         condition: service_healthy
     restart: unless-stopped
 
+  #智慧山商api by 1ZQL1
   zhssapi:
     build: ./zhssapi
     ports:
-      - "8090:8090"
+      - "8090:8090" #调试时请对外开放端口
     environment:
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_DATABASE: zhss
-      MYSQL_USERNAME: zhss
-      MYSQL_PASSWORD: zhsspy233
-    depends_on:
-      mysql:
+      MYSQL_HOST: mysql #数据库地址，在docker compose中可直接使用服务名称或容器名称进行连接
+      MYSQL_PORT: 3306 #数据库端口
+      MYSQL_DATABASE: zhss #数据库名
+      MYSQL_USERNAME: zhss #用户名
+      MYSQL_PASSWORD: zhsspy233 #数据库密码
+    depends_on: #配置依赖
+      mysql: #智慧山商api需等待MySQL服务启动
         condition: service_healthy
     container_name: zhss-app
 
+  #配置MySQL服务
   mysql:
     image: mysql:latest
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: zhss
-      MYSQL_USER: zhss
-      MYSQL_PASSWORD: zhsspy233
+      MYSQL_ROOT_PASSWORD: rootpassword #MySQL root密码
+      MYSQL_DATABASE: zhss #添加zhss数据库
+      MYSQL_USER: zhss #添加数据库名
+      MYSQL_PASSWORD: zhsspy233 #添加数据库密码
     #volumes:
-    #  - ./mdata:/var/lib/mysql
-    healthcheck:
+    #  - ./mdata:/var/lib/mysql #数据库目录映射，便于数据持久化
+    healthcheck: #进行数据库健康检查
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s

@@ -12,6 +12,11 @@ namespace ricwxbot.sdtbuapi
         /// </summary>
         public static string sdtbuapiURL = Environment.GetEnvironmentVariable("ZHSS_API_URL");
 
+        /// <summary>
+        /// api获取课表信息
+        /// </summary>
+        /// <param name="wxname">微信昵称</param>
+        /// <returns></returns>
         public static async Task<string[]> GetCourseSchedule(string wxname)
         {
             
@@ -95,7 +100,7 @@ namespace ricwxbot.sdtbuapi
 
 
         /// <summary>
-        /// 解析获取的课表数据
+        /// 解析获取的课表数据-课程详情式
         /// </summary>
         /// <param name="Class_json">课表数据</param>
         public static string[] ScheduleAnalyze(string Class_json)
@@ -122,6 +127,88 @@ namespace ricwxbot.sdtbuapi
                     Console.WriteLine($"课程名称: {courseName}, 教师姓名: {teacherName}, 起始时间: {startTime}, 结束时间: {endTime}, 上课地点: {location}, 上课星期: {weekDay}");
                     
                 }
+                return rdata.ToArray();
+            }
+            else
+            {
+                string[] nfalse = { "课程解析错误！" };
+                Console.WriteLine("无法获取课程数据或发生错误: " + msg);
+                return nfalse;
+            }
+        }
+
+        /// <summary>
+        /// 解析获取的课表数据-周模式-去除课程详细信息，只保留上课星期
+        /// </summary>
+        /// <param name="Class_json"></param>
+        /// <returns></returns>
+        public static string[] ScheduleAnalyzeWeek(string Class_json)
+        {
+            string json = Class_json;
+            List<string> rdata = new List<string>();
+            JObject jsonObject = JObject.Parse(json);
+
+            int code = (int)jsonObject["code"];
+            string msg = (string)jsonObject["msg"];
+
+            if (code == 200)
+            {
+                JArray coursesArray = (JArray)jsonObject["data"];
+
+
+                string weekMonday = "星期一：\n";
+                string weekTuesday = "星期二：\n";
+                string weekWednesday = "星期三：\n";
+                string weekThursday = "星期四：\n";
+                string weekFriday = "星期五：\n";
+                string weekSaturday = "星期六：\n";
+                string weekSunday = "星期日：\n";
+
+                foreach (JObject course in coursesArray)
+                {
+                    string courseName = (string)course["课程名称"];
+                    string location = (string)course["上课地点"];
+                    int weekDay = (int)course["上课星期"];
+
+                    // 使用 switch 语句根据 weekDay 执行不同的操作
+                    switch (weekDay)
+                    {
+                        case 1:
+                            weekMonday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            break;
+                        case 2:
+                            weekTuesday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            break;
+                        case 3:
+                            weekWednesday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            break;
+                        case 4:
+                            weekThursday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            break;
+                        case 5:
+                            weekFriday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            break;
+                        case 6:
+                            weekSaturday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            break;
+                        case 7:
+                            weekSunday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            break;
+                        default:
+                            break;
+                    }
+
+                    Console.WriteLine($"课程名称: {courseName}, 上课地点: {location}, 上课星期: {weekDay}");
+                }
+
+                rdata.Add(weekMonday);
+                rdata.Add(weekTuesday);
+                rdata.Add(weekWednesday);
+                rdata.Add(weekThursday);
+                rdata.Add(weekFriday);
+                rdata.Add(weekSaturday);
+                rdata.Add(weekSunday);
+
                 return rdata.ToArray();
             }
             else
