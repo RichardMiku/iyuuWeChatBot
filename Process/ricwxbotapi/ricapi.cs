@@ -23,7 +23,7 @@ namespace ricwxbot.Process.ricwxbotapi
 
         #region 群消息
         /// <summary>
-        /// 多线程发送消息api，防卡顿
+        /// 多线程发送群消息api，防卡顿
         /// </summary>
         /// <param name="msgtype">消息类型</param>
         /// <param name="toUSER">发送对象</param>
@@ -45,7 +45,7 @@ namespace ricwxbot.Process.ricwxbotapi
         }
 
         /// <summary>
-        /// 源_发送消息api
+        /// 源_发送群消息api
         /// </summary>
         /// <param name="msgtype">消息类型</param>
         /// <param name="toUSER">发送对象</param>

@@ -55,7 +55,8 @@ namespace ricwxbot.sdtbuapi
                         {
                             if ((int)keyValuePairs["code"] == 200)
                             {
-                                return ScheduleAnalyze(responseBody);
+                                //return ScheduleAnalyze(responseBody);
+                                return ScheduleAnalyzeWeek(responseBody);
                             }
                             else
                             {
@@ -140,7 +141,7 @@ namespace ricwxbot.sdtbuapi
         /// <summary>
         /// 解析获取的课表数据-周模式-去除课程详细信息，只保留上课星期
         /// </summary>
-        /// <param name="Class_json"></param>
+        /// <param name="Class_json">课表数据</param>
         /// <returns></returns>
         public static string[] ScheduleAnalyzeWeek(string Class_json)
         {
@@ -174,25 +175,25 @@ namespace ricwxbot.sdtbuapi
                     switch (weekDay)
                     {
                         case 1:
-                            weekMonday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            weekMonday += $"课程名称: {courseName}\n上课地点: {location}\n\n";
                             break;
                         case 2:
-                            weekTuesday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            weekTuesday += $"课程名称: {courseName}\n上课地点: {location}\n\n";
                             break;
                         case 3:
-                            weekWednesday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            weekWednesday += $"课程名称: {courseName}\n上课地点: {location}\n\n";
                             break;
                         case 4:
-                            weekThursday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            weekThursday += $"课程名称: {courseName}\n上课地点: {location}\n\n";
                             break;
                         case 5:
-                            weekFriday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            weekFriday += $"课程名称: {courseName}\n上课地点: {location}\n\n";
                             break;
                         case 6:
-                            weekSaturday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            weekSaturday += $"课程名称: {courseName}\n上课地点: {location}\n\n";
                             break;
                         case 7:
-                            weekSunday += $"课程名称: {courseName}, 上课地点: {location}\n";
+                            weekSunday += $"课程名称: {courseName}\n上课地点: {location}\n\n";
                             break;
                         default:
                             break;
@@ -200,7 +201,7 @@ namespace ricwxbot.sdtbuapi
 
                     Console.WriteLine($"课程名称: {courseName}, 上课地点: {location}, 上课星期: {weekDay}");
                 }
-
+                rdata.Add("📖本周课程表📖");
                 rdata.Add(weekMonday);
                 rdata.Add(weekTuesday);
                 rdata.Add(weekWednesday);

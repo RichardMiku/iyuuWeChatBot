@@ -213,20 +213,23 @@ namespace ricwxbot.Controllers
                 {
                     var data = new List<object>();
                     string[] coursesArray = await Cschedule.GetCourseSchedule(PerWXname);
+                    string CoursesContent = "";
                     foreach (string course in coursesArray)
                     {
                         // 创建课程信息的匿名对象，并添加到data列表中
-                        var courseInfo = new
-                        {
-                            type = "text",
-                            content = course
-                        };
-                        data.Add(courseInfo);
+                        //var courseInfo = new
+                        //{
+                        //    type = "text",
+                        //    content = course
+                        //};
+                        //data.Add(courseInfo);
+                        CoursesContent += course + "\n";
                     }
                     var response = new
                     {
                         success = true,
-                        data = data.ToArray() // 将列表转换为数组
+                        //data = data.ToArray() // 将列表转换为数组
+                        data= new { type = "text", content = CoursesContent }
                     };
 
                     return new JsonResult(response);
@@ -243,7 +246,18 @@ namespace ricwxbot.Controllers
                 
             }
 
+            //功能-娱乐-少爷
+            if (msgReceive.Content == "不愧是")
+            {
+                var response = new
+                {
+                    success = true,
+                    data = new { type = "text", content = "少爷！" }
+                };
 
+                return new JsonResult(response);
+                //return strMenu.strMENUProc(strMenu.menuTEXT());
+            }
 
 
 

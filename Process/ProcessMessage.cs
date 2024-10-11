@@ -23,25 +23,39 @@ namespace ricwxbot.Process
                 //await api.apiSendMessage("text", "##", ex.Message);
             }
 
-            //实现一言功能的消息处理
-            if(msgReceive.Content == "一言")
+            //构造发送文本消息的方法，自动判断发送对象
+            async void apisendmsg(string msgtype, string msgcontent)
             {
-                hitokoto _hitokoto = new hitokoto();
-                string hitContent = await _hitokoto.hitokotoGetAsync();
                 if (msgFROMgroup != null)
                 {
-                    await api.apiSendGroupMessage("text", msgFROMgroup, hitContent);
+                    await api.apiSendGroupMessage("text", msgFROMgroup, msgcontent);
                 }
                 else
                 {
-                    await api.apiSendMessage("text", msgFROMperson, hitContent);
+                    await api.apiSendMessage("text", msgFROMperson, msgcontent);
                 }
+            }
+
+            //实现一言功能的消息处理
+            if (msgReceive.Content == "一言")
+            {
+                hitokoto _hitokoto = new hitokoto();
+                string hitContent = await _hitokoto.hitokotoGetAsync();
+                //if (msgFROMgroup != null)
+                //{
+                //    await api.apiSendGroupMessage("text", msgFROMgroup, hitContent);
+                //}
+                //else
+                //{
+                //    await api.apiSendMessage("text", msgFROMperson, hitContent);
+                //}
+                apisendmsg("text", hitContent);
             }
 
             //实现菜单功能的消息处理
             if (msgReceive.Content == "菜单")
             {
-
+                
             }
 
             return new { Message = "Message processed successfully." };
