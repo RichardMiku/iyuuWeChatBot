@@ -81,7 +81,7 @@ namespace ricwxbot.Controllers
 
 
             //菜单-主菜单
-            if (msgReceive.Content == "菜单")
+            if (msgReceive.Content == "菜单" || msgReceive.Content == "主菜单" || msgReceive.Content == "功能")
             {
                 var response = new
                 {
