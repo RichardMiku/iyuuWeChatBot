@@ -39,7 +39,7 @@ namespace ricwxbot.strFunc
         {
             string FuncMenu = "🛠️功能实现🛠️\n" +
                 "✅主菜单\n" +
-                "✅一言" +
+                "✅一言\n" +
                 "✅智慧山商菜单\n" +
                 "✅个人信息\n" +
                 "❎成绩查询\n" +
