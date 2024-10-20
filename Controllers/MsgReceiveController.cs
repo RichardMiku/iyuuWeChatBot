@@ -81,7 +81,7 @@ namespace ricwxbot.Controllers
 
 
             //菜单-主菜单
-            if (msgReceive.Content == "菜单" || msgReceive.Content == "主菜单" || msgReceive.Content == "功能")
+            if (strCMD.strCMDmenu(msgReceive.Content)) 
             {
                 var response = new
                 {
@@ -205,7 +205,7 @@ namespace ricwxbot.Controllers
             }
 
             //功能-智慧山商-课表查询
-            if (msgReceive.Content == "课表查询") 
+            if (strCMD.strCMDclass(msgReceive.Content)) 
             {
                 JObject PerSource = JObject.Parse(msgReceive.Source);
                 string PerWXname = (string)PerSource["from"]["payload"]["name"];
@@ -244,6 +244,48 @@ namespace ricwxbot.Controllers
                     return new JsonResult(response);
                 }
                 
+            }
+
+            //功能-智慧山商-课表查询
+            if (strCMD.strCMDNextClass(msgReceive.Content)) 
+            {
+                JObject PerSource = JObject.Parse(msgReceive.Source);
+                string PerWXname = (string)PerSource["from"]["payload"]["name"];
+                if (jsonWR.INFOcheck(PerWXname))
+                {
+                    var data = new List<object>();
+                    string[] coursesArray = await Cschedule.GetCourseScheduleNext(PerWXname);
+                    string CoursesContent = "";
+                    foreach (string course in coursesArray)
+                    {
+                        // 创建课程信息的匿名对象，并添加到data列表中
+                        //var courseInfo = new
+                        //{
+                        //    type = "text",
+                        //    content = course
+                        //};
+                        //data.Add(courseInfo);
+                        CoursesContent += course + "\n";
+                    }
+                    var response = new
+                    {
+                        success = true,
+                        //data = data.ToArray() // 将列表转换为数组
+                        data = new { type = "text", content = CoursesContent }
+                    };
+
+                    return new JsonResult(response);
+                }
+                else
+                {
+                    var response = new
+                    {
+                        success = true,
+                        data = new { type = "text", content = "您未绑定智慧山商，请先绑定！" }
+                    };
+                    return new JsonResult(response);
+                }
+
             }
 
             //功能-娱乐-少爷
